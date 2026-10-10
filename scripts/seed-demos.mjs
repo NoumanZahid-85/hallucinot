@@ -9,6 +9,7 @@
 import { writeFileSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { DEMOS } from "../src/data/demos.ts";
+import { judge } from "../src/lib/verdict.ts";
 
 const args = process.argv.slice(2);
 const base = args.find((a) => a.startsWith("http")) ?? "http://localhost:3000";
@@ -16,14 +17,7 @@ const allowMock = args.includes("--allow-mock");
 const outFile = fileURLToPath(new URL("../src/data/demo-results.json", import.meta.url));
 const saved = JSON.parse(readFileSync(outFile, "utf8"));
 
-function verdict(result, s) {
-  if (result.sentences[s].claim < 0.5) return "not_claim";
-  let sup = 0, con = 0;
-  for (const [a, b] of result.cells[s]) [sup, con] = [Math.max(sup, a), Math.max(con, b)];
-  if (con >= 0.5 && con > sup) return "contradicted";
-  if (sup >= 0.5) return "supported";
-  return "unsupported";
-}
+const verdict = (result, s) => judge(result, s, 0.8).verdict;
 
 let failed = 0;
 for (const demo of DEMOS) {
