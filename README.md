@@ -1,18 +1,25 @@
 <div align="center">
 
-# 🧾 Receipts
+# Alibi
 
-### Every sentence an AI writes should come with a receipt.
+**Every sentence needs an alibi.**
 
-A hallucination heatmap for RAG answers. Paste an AI answer and its sources, and Receipts checks **every sentence against every source passage in parallel**. It shows which claims are backed, which are contradicted, and which are made up, in about two seconds.
+Your support bot just told a customer they have 60 days to get a refund.<br/>
+Your policy says 30. Nobody noticed.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white)
-![Typed decisions](https://img.shields.io/badge/engine-Jev%20%2F%20OpenJev-3b4fd8)
-![Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)
+Alibi checks every sentence of an AI answer against the documents it should come from,<br/>
+and shows you which ones are backed, which are contradicted, and which were invented.
 
-<img src="docs/demo.gif" alt="Receipts demo: clicking sentences draws lines to the source passages that support or contradict them" width="100%" />
+<br/>
+
+<img src="docs/demo.gif" alt="Alibi demo: a chatbot answer highlighted sentence by sentence, with lines to the source passages that back or contradict each claim" width="100%" />
+
+<br/>
+
+![Next.js 15](https://img.shields.io/badge/Next.js-15-172036?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-172036?logo=typescript&logoColor=white)
+![Typed decisions](https://img.shields.io/badge/engine-Jev%20%2F%20OpenJev-2a4bd7)
+![Deploy](https://img.shields.io/badge/deploy-Vercel-172036?logo=vercel)
 
 </div>
 
@@ -20,133 +27,108 @@ A hallucination heatmap for RAG answers. Paste an AI answer and its sources, and
 
 ## The problem
 
-RAG chatbots answer from your documents, yet they still invent refund windows, misquote policies and confidently state the opposite of the source. Teams catch these errors in one of two ways:
+RAG chatbots answer from your docs, and they still make things up. The usual fixes don't hold up at scale:
 
-- **A human reads the answer against the docs.** This is accurate, but it doesn't scale past a few answers a day.
-- **Another LLM grades the answer.** A judge model writes a paragraph about the paragraph. It is slow and costly at volume, and its verdict comes back as text you have to parse and trust.
+- **A person reads every answer against the sources.** This is accurate, but it doesn't scale past a few answers a day.
+- **Another LLM grades the answer.** It writes a paragraph about a paragraph. You still don't know *which* sentence is wrong, *which* passage proves it, or how much to trust the grade.
 
-Neither tells you *which sentence* is wrong, *which passage* proves it, or *how sure* the check is.
+## The idea
 
-## The approach
+Don't ask a model to write a review. Ask it hundreds of tiny multiple-choice questions, and let code decide.
 
-Receipts treats fact-checking as many small, typed decisions instead of one big essay:
+For every sentence × passage pair, Alibi asks one question:
+
+> Does this passage **back**, **contradict**, or **say nothing about** “Refunds are open for 60 days”?
+
+The engine ([Jev](https://typesafe.ai)-style typed decisions) returns a probability for each option instead of prose. That makes everything else plain code: each sentence keeps its strongest source, a contradiction beats weak support, and anything the engine is unsure about goes to a human.
 
 ```mermaid
 flowchart LR
-    A[AI answer] -->|split| S[Sentences]
-    D[Source docs] -->|split| P[Passages]
-    S --> Q{{"For every passage × sentence:<br/>supports · contradicts · says nothing"}}
-    P --> Q
-    Q -->|probabilities| V[Verdict per sentence]
-    V -->|confidence ≥ threshold| OK[Auto-accept]
-    V -->|confidence < threshold| HR[Human review queue]
+    A[AI answer] -->|split| S[sentences]
+    D[sources] -->|split| P[passages]
+    S & P --> Q{{"every pair:<br/>back · contradict · silent"}}
+    Q -->|probabilities| V[verdict per sentence]
+    V -->|sure| OK[auto-accept]
+    V -->|unsure| H[human review]
 ```
 
-1. **Split.** The answer becomes sentences and the sources become passages.
-2. **Ask.** One API call per passage. The passage is the *state*, and every sentence is an independent typed `choice` question with three options: `supports`, `contradicts`, `says_nothing`. A separate `noul` (yes/no) call filters out greetings and filler.
-3. **Decide in code.** Each sentence keeps its strongest receipt. Contradictions beat weak support. Anything below the confidence threshold goes to a human queue. Moving the slider re-routes everything instantly in the browser with **zero new API calls**, because the engine returned probabilities, not prose.
+## Does it work?
 
-This is the [System One](https://docs.typesafe.ai/concepts/system-one) pattern from TypeSafe's Jev: the model makes calibrated judgments, and plain code owns the logic.
+These are real engine runs on the three built-in examples, scored against hand labels:
 
-## Results
+| Example | Sentences × passages | Questions | Time | Tokens | Cost at Jev price | Matches labels |
+|---|---|---|---|---|---|---|
+| Support bot | 9 × 7 | 72 | 2.5 s | 13.8k | $0.0006 | 9/9 |
+| Science explainer | 9 × 8 | 81 | 2.6 s | 14.4k | $0.0006 | 8/9 |
+| HR assistant | 10 × 7 | 80 | 3.3 s | 15.0k | $0.0006 | 9/10 |
 
-Measured on the three built-in demos against hand labels. These are real engine runs, saved in [`src/data/demo-results.json`](src/data/demo-results.json):
+**26 of 28 sentences match. Both misses fell below the review threshold**, so they went to a person instead of shipping as confident mistakes. At list price, a dollar audits about 1,600 answers.
 
-| Demo | Sentences × passages | Questions | Parallel calls | Wall time | Input tokens | Cost at Jev price | Agrees with labels |
-|---|---|---|---|---|---|---|---|
-| Support bot | 9 × 7 | 72 | 8 | 2.15 s | 12.1k | $0.00051 | 9/9 |
-| Science explainer | 9 × 8 | 81 | 9 | 2.56 s | 12.4k | $0.00052 | 9/9 |
-| HR assistant | 10 × 7 | 80 | 8 | 2.28 s | 13.1k | $0.00055 | 9/10 |
+## What you can do with it
 
-**27/28 sentences match the hand labels.** The one miss ("you can split the leave into as many blocks as you like") is a subtle quantifier contradiction. Each check costs about **$0.0005** at Jev's list price, so **$1 covers about 2,000 full answer audits**.
+- **Read the marks.** Green highlights are backed. Pink with a wavy underline is contradicted. Yellow with a dashed underline has no source. Every verdict has its own shape, so you can read it without relying on color.
+- **Follow the evidence.** Click any sentence and lines connect it to the exact passages that back or refute it.
+- **Jump between problems.** Use **Next issue**, or step through sentences with the `←` `→` keys.
+- **Set your own bar for trust.** Drag the review threshold and verdicts re-sort instantly, with no new API calls.
+- **See every check.** A grid shows every sentence × passage question the engine answered.
+- **Bring your own text.** Paste any answer and its sources, then press `Ctrl + Enter`.
+- **Copy a Markdown report** to share in a ticket or pull request.
 
-Engine: OpenJev v0.1 via codiv.ai. Runs can vary slightly from one run to the next.
-
-## Features
-
-- **Evidence board.** Click any sentence to draw lines to the passages that back it (green) or refute it (red).
-- **Receipt summary.** Groundedness score, verdict counts, questions asked, latency, tokens and cost.
-- **Confidence routing.** An auto-accept slider and a live human review queue.
-- **Evidence matrix.** The full sentence × passage heatmap, where every cell is one typed question.
-- **Built-in eval.** Demos carry hand labels, and disagreements are marked `≠` on the board.
-- **Bring your own text.** Paste any answer and its sources (`# Title` starts a document).
-- **Production guards.** Server-side key, per-IP rate limit, input caps, retries with backoff on `429`/`529`, and saved demos that keep working if the engine is busy.
-- **Light and dark themes**, a mobile layout, keyboard-accessible sentences, and reduced-motion support.
-
-## Quick start
+## Run it
 
 ```bash
-git clone <your-repo-url> receipts && cd receipts
+git clone https://github.com/NoumanZahid-85/alibi.git && cd alibi
 npm install
-cp .env.example .env.local     # add your key
-npm run dev                    # http://localhost:3000
+cp .env.example .env.local   # add a key, see below
+npm run dev                  # http://localhost:3000
 ```
 
-No key yet? Run `JEV_ENGINE=mock npm run dev` for an offline word-overlap mock. The app labels it as not Jev. Use it for UI work only.
+No key? `JEV_ENGINE=mock npm run dev` runs an offline mock so you can work on the UI. It is clearly labeled as not Jev.
 
-### Refresh the saved demo runs
+### Pick an engine
 
-```bash
-npm run dev     # terminal 1
-npm run seed    # terminal 2: runs every demo live, saves results, prints label agreement
-```
+Alibi works with any endpoint that speaks TypeSafe's System One API. Switching engines only means changing environment variables.
 
-## Configuration
-
-Receipts talks to any endpoint that speaks TypeSafe's System One API (`POST /v1/systemone`). Switching engines only means changing environment variables:
-
-| Engine | `TYPESAFE_BASE_URL` | `TYPESAFE_MODEL` | Notes |
+| Engine | `TYPESAFE_BASE_URL` | `TYPESAFE_MODEL` | Cost |
 |---|---|---|---|
-| **OpenJev** on codiv.ai | `https://api.codiv.ai` | `jev-latest` | Free tier: 100M input tokens, no card |
-| **Jev** by TypeSafe | `https://api.typesafe.ai` | `jev-latest` | $0.042 per 1M input tokens |
-| **Jev** via Vercel AI Gateway | `https://ai-gateway.vercel.sh/typesafe` | `typesafe-ai/jev` | Uses an AI Gateway key |
+| OpenJev on [codiv.ai](https://codiv.ai) | `https://api.codiv.ai` | `jev-latest` | Free tier, 100M tokens |
+| Jev by [TypeSafe](https://typesafe.ai) | `https://api.typesafe.ai` | `jev-latest` | $0.042 per 1M input tokens |
+| Jev via Vercel AI Gateway | `https://ai-gateway.vercel.sh/typesafe` | `typesafe-ai/jev` | AI Gateway credits |
 
-| Variable | Required | Description |
-|---|---|---|
-| `TYPESAFE_API_KEY` | yes | Engine API key. It is only read on the server. |
-| `TYPESAFE_BASE_URL` | no | Defaults to `https://api.typesafe.ai` |
-| `TYPESAFE_MODEL` | no | Defaults to `jev-latest` |
-| `RATE_LIMIT_PER_10_MIN` | no | Live checks per visitor IP (default `8`) |
-| `JEV_ENGINE` | no | Set to `mock` for offline UI development |
+Set `TYPESAFE_API_KEY` for whichever engine you pick. It is only read on the server.
 
-## Deploy to Vercel
+### Deploy to Vercel
 
-1. Push the repo to GitHub and import it at [vercel.com/new](https://vercel.com/new). Next.js is detected automatically.
-2. In **Settings → Environment Variables**, add `TYPESAFE_BASE_URL`, `TYPESAFE_API_KEY` and `TYPESAFE_MODEL`.
-3. Deploy. The homepage is statically prerendered, and only `/api/check` runs as a serverless function (60 s max duration).
+1. Import the repo at [vercel.com/new](https://vercel.com/new).
+2. Add `TYPESAFE_BASE_URL`, `TYPESAFE_API_KEY` and `TYPESAFE_MODEL` as environment variables.
+3. Deploy.
 
-If you change environment variables later, redeploy so the engine badge updates.
+The page is prerendered, and only `/api/check` runs as a function. A per-IP rate limit, input caps and retries are built in. If the engine is down, the saved examples keep working.
 
-## Project structure
+To refresh the saved examples after changing the prompts, run `npm run dev`, then `npm run seed`. The seed script reports agreement with the hand labels.
+
+## Under the hood
 
 ```
-src/
-├── app/
-│   ├── api/check/route.ts    POST endpoint: validation, rate limit, error mapping
-│   ├── page.tsx              loads demos + saved runs
-│   └── opengraph-image.tsx   social preview card
-├── components/
-│   ├── ReceiptsApp.tsx       shell, demo tabs, input editor, live runs
-│   └── Results.tsx           receipt, review queue, evidence board, matrix
-├── lib/
-│   ├── engine.ts             System One client: fan-out, retries, mock engine
-│   ├── split.ts              sentence + passage splitting (shared client/server)
-│   └── verdict.ts            probabilities → verdict, confidence, review routing
-└── data/
-    ├── demos.ts              three demo cases with hand labels
-    └── demo-results.json     saved real engine runs
-scripts/seed-demos.mjs        regenerates demo-results.json and reports agreement
+src/lib/engine.ts      fan-out: one call per passage, every sentence a typed question
+src/lib/verdict.ts     probabilities → verdict, confidence, review routing
+src/lib/split.ts       sentences and passages (shared by browser and server)
+src/app/api/check      validation, rate limit, error handling
+src/components         hero, composer, verdict bar, evidence board, check grid
+src/data               three examples with hand labels and saved real runs
 ```
 
-## Limitations
+Two lessons from testing are now in the code:
 
-- **Calibration is not guaranteed.** OpenJev's probabilities come from a diffusion model's single denoising step. They rank options well, but "0.8" is not proven to mean 80%. That is why the threshold is a slider and not a constant.
-- **Arithmetic and dates are weak spots** for this model class. A claim like "five weeks is within 30 days" needs math, not reading.
-- **Passage-level judging.** A claim that needs two passages combined can come back as "no receipt."
-- The per-IP rate limit is best effort, because serverless instances don't share memory. For a hard quota, put it behind a shared store such as Upstash or Vercel KV.
+- **"Judge only from the passage."** Without that instruction, the engine marked "The Eiffel Tower is in Berlin" as contradicted by a passage that only gave the completion date. It was using world knowledge, not the source.
+- **Strong evidence overrules the filler filter.** A sentence a source backs or refutes with high confidence can't be "just a greeting."
 
-## Acknowledgements
+## Honest limits
 
-- [TypeSafe](https://typesafe.ai) for Jev and the System One API design, and their [citation-check cookbook](https://docs.typesafe.ai/cookbooks/citation_check), which inspired the three-way verdict.
-- [OpenJev](https://github.com/razorback16/openjev), an independent open-source server that implements the same API. It is not affiliated with TypeSafe.
-- Lumen Notes and Kestrel Analytics are fictional sample companies. The James Webb Space Telescope notes are factual, and the AI answer about it contains deliberate errors.
+- The probabilities rank options well, but nobody has proven they are calibrated. That's why the threshold is a slider you control.
+- Arithmetic and dates are weak spots. "Five weeks is within 30 days" needs math, not reading.
+- Each passage is judged on its own. A claim that needs two passages combined can come back as "no source."
+
+## Credits
+
+[TypeSafe](https://typesafe.ai) for Jev and the System One API, which shaped the three-way verdict through their [citation-check cookbook](https://docs.typesafe.ai/cookbooks/citation_check). [OpenJev](https://github.com/razorback16/openjev) is an independent open-source server for the same API. Lumen Notes and Kestrel Analytics are made-up companies. The telescope facts are real, and the AI answer about them contains deliberate mistakes.
