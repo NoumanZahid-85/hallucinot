@@ -466,7 +466,7 @@ function Matrix({ result, judgements, selected, onSelect, hoveredPassage, onHove
         Each cell is one typed question: does passage P support, contradict, or say nothing about sentence S? Green means supports and red means contradicts. Darker is more probable.
       </p>
       <div className="mt-4 overflow-x-auto">
-        <div className="grid w-max min-w-full gap-[3px]" style={{ gridTemplateColumns: `2.75rem repeat(${n}, minmax(22px, 1fr))` }}>
+        <div className="grid w-max gap-[3px]" style={{ gridTemplateColumns: `2.75rem repeat(${n}, clamp(22px, calc((100vw - 10rem) / ${n}), 44px))` }}>
           <div />
           {result.passages.map((p) => (
             <div
