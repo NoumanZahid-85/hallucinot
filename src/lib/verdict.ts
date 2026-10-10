@@ -11,19 +11,20 @@ export interface Judgement {
 
 const CLAIM_CUTOFF = 0.5;
 const DECISION_CUTOFF = 0.5;
+/** Filler can't be strongly backed or refuted by a source, so strong evidence overrules the claim filter. */
+const EVIDENCE_OVERRIDE = 0.7;
 
 export function judge(result: CheckResult, s: number, autoAccept: number): Judgement {
-  const claim = result.sentences[s].claim;
-  if (claim < CLAIM_CUTOFF) {
-    const confidence = 1 - claim;
-    return { verdict: "not_claim", confidence, passage: null, needsReview: false };
-  }
-
   let bestSup = 0, supAt = -1, bestCon = 0, conAt = -1;
   result.cells[s].forEach(([sup, con], p) => {
     if (sup > bestSup) [bestSup, supAt] = [sup, p];
     if (con > bestCon) [bestCon, conAt] = [con, p];
   });
+
+  const claim = result.sentences[s].claim;
+  if (claim < CLAIM_CUTOFF && Math.max(bestSup, bestCon) < EVIDENCE_OVERRIDE) {
+    return { verdict: "not_claim", confidence: 1 - claim, passage: null, needsReview: false };
+  }
 
   let verdict: Verdict, confidence: number, passage: number | null;
   if (bestCon >= DECISION_CUTOFF && bestCon > bestSup) {
