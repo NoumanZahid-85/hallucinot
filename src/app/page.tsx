@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <ReceiptsApp
       demos={DEMOS}
-      saved={savedResults as Record<string, CheckResult>}
+      saved={savedResults as unknown as Record<string, CheckResult>}
       engine={{ label, configured }}
     />
   );
