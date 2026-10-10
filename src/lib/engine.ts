@@ -18,10 +18,13 @@ interface SystemOneResponse {
   usage?: { input_tokens?: number };
 }
 
+// Worded so the engine judges the passage alone: without "only outside knowledge"
+// guidance it marked "The Eiffel Tower is in Berlin" as contradicted by a passage
+// that only gives the completion date.
 const RELATION_CRITERIA: Record<Relation, string> = {
-  supports: "The passage states the claim or directly implies that it is true.",
-  contradicts: "The passage states the opposite of the claim or implies that it is false.",
-  says_nothing: "The passage does not address the claim either way.",
+  supports: "The passage itself states the claim or directly implies that it is true.",
+  contradicts: "The passage itself states something that cannot be true at the same time as the claim.",
+  says_nothing: "The passage does not address what the claim is about. Use this when only outside knowledge could settle it.",
 };
 
 export class EngineError extends Error {
@@ -104,6 +107,7 @@ function claimInstruction(question: string, sentences: string[], s: number) {
   const prev = s > 0 ? ` (The sentence before it, for context only: "${sentences[s - 1]}")` : "";
   return (
     `An AI assistant was asked: "${question}". One sentence of its answer is: "${sentences[s]}".${prev} ` +
+    `Judge only from what the passage says, not from general knowledge. ` +
     `How does the passage relate to the factual claim made in that sentence?`
   );
 }
