@@ -7,8 +7,8 @@ import type { Demo } from "@/lib/types";
 export const DEMOS: Demo[] = [
   {
     id: "support-bot",
-    label: "Support bot",
-    blurb: "A help-center chatbot answers a refund question",
+    label: "Support Bot",
+    blurb: "Refunds & plans",
     question: "I bought the annual Pro plan 5 weeks ago and barely used it. Can I get a refund, and what happens to my notes?",
     answer: `Thanks for reaching out, and sorry the Pro plan wasn't a fit! Annual Pro plans can be refunded within 60 days of purchase, so at five weeks you're still eligible for a full refund. Refunds go back to your original payment method and usually show up within 5–10 business days. If you cancel, your account will switch to the Free plan and all of your existing notes will be kept. The Free plan includes unlimited synced devices. You can also export all of your notes as Markdown or PDF from Settings → Data → Export. As a thank-you for being a Pro member, we'll add a free month of Pro to your account after the refund is processed. Your notes in Trash will be included in the export as well. Let me know if there's anything else I can help with!`,
     sources: `# Refund policy
@@ -41,8 +41,8 @@ Deleted notes stay in Trash for 30 days before they are permanently removed. Not
   },
   {
     id: "webb",
-    label: "Science explainer",
-    blurb: "A research assistant summarises the James Webb Space Telescope",
+    label: "Space Facts",
+    blurb: "James Webb telescope",
     question: "Give me a quick overview of the James Webb Space Telescope.",
     answer: `The James Webb Space Telescope is an infrared space observatory led by NASA in partnership with ESA and the Canadian Space Agency. It launched on 25 December 2021 aboard a SpaceX Falcon Heavy rocket. Webb orbits the Earth at an altitude of about 1.5 million kilometres. Its 6.5-metre primary mirror is built from 18 gold-plated beryllium segments. A five-layer sunshield the size of a tennis court keeps its instruments extremely cold. Webb was the first telescope ever to take a direct photograph of a planet outside our solar system. Its first full-colour images were released in July 2022. The telescope is named after James E. Webb, who ran NASA during the Apollo era. The whole project cost less than 1 billion US dollars.`,
     sources: `# Mission overview
@@ -78,8 +78,8 @@ Including development and early operations, the project's cost is estimated at r
   },
   {
     id: "hr-policy",
-    label: "HR assistant",
-    blurb: "An internal HR bot explains parental leave and remote work",
+    label: "HR Policy",
+    blurb: "Parental leave",
     question: "I'm expecting a baby in March. How much parental leave do I get, and can I work remotely afterwards?",
     answer: `Congratulations on the upcoming arrival! Once you've completed 6 months of service, you're entitled to 16 weeks of parental leave at full pay. You can split the leave into as many blocks as you like, as long as you use it within 12 months. Please let your manager and People Operations know at least 8 weeks before your leave starts. New parents also get an extra week of paid "nesting leave" before the due date. When you come back, you can work 60% of your normal hours at full pay for your first 4 weeks. Kestrel also covers 100% of daycare costs for children under 5. After your leave, you can work remotely up to 3 days a week with your manager's approval. Fully remote work is automatically approved for new parents for their first year back. Remote employees need to be online during core hours, 10:00 to 15:00.`,
     sources: `# Employee handbook — Parental leave
