@@ -91,7 +91,7 @@ export function ReceiptsApp({ demos, saved, engine }: Props) {
           Every sentence an AI writes should come with a <span className="text-accent">receipt</span>.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted sm:text-lg">
-          RAG chatbots still make things up, and checking every answer by hand doesn&apos;t scale. Paste an answer and its sources. Receipts checks every sentence against every passage in about a second and shows which claims are backed, contradicted, or invented.
+          RAG chatbots still make things up, and checking every answer by hand doesn&apos;t scale. Paste an answer and its sources. Receipts checks every sentence against every passage in a couple of seconds and shows which claims are backed, contradicted, or invented.
         </p>
         <ol className="mt-8 grid gap-3 text-sm sm:grid-cols-3">
           {[
