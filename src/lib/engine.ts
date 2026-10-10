@@ -129,16 +129,18 @@ export async function runCheck(question: string, answer: string, sources: string
   }));
 
   // Plus one call that filters out greetings and filler, so they are not scored.
+  // Quote each sentence instead of referring to it by number: index lookups
+  // ("sentence [9]") proved unreliable for the last sentences of an answer.
   const claimCall = {
-    state: sentences.map((t, s) => `[${s + 1}] ${t}`).join("\n"),
+    state: `An AI assistant's answer:\n${sentences.join(" ")}`,
     questions: Object.fromEntries(
-      sentences.map((_, s) => [
+      sentences.map((text, s) => [
         `k${s}`,
         {
           type: "noul",
           instructions:
-            `Is sentence [${s + 1}] a factual statement that could be checked against reference documents, ` +
-            `rather than a greeting, apology, sign-off or offer of help?`,
+            `Consider this sentence from the answer: "${text}". Does it make a factual claim that could be checked ` +
+            `against reference documents, rather than being a greeting, apology, sign-off or offer of help?`,
         },
       ]),
     ) as Record<string, Question>,
