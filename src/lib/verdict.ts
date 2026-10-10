@@ -4,7 +4,7 @@ export interface Judgement {
   verdict: Verdict;
   /** How sure the engine is about this verdict, 0..1. */
   confidence: number;
-  /** Passage that decided the verdict (best receipt or strongest contradiction). */
+  /** Passage that decided the verdict (best source or strongest contradiction). */
   passage: number | null;
   needsReview: boolean;
 }
@@ -31,7 +31,7 @@ export function judge(result: CheckResult, s: number, autoAccept: number): Judge
   } else if (bestSup >= DECISION_CUTOFF) {
     [verdict, confidence, passage] = ["supported", bestSup, supAt];
   } else {
-    // No passage clearly backs or refutes it: the claim has no receipt.
+    // No passage clearly backs or refutes it: the claim has no source.
     [verdict, confidence, passage] = ["unsupported", 1 - Math.max(bestSup, bestCon), supAt >= 0 ? supAt : null];
   }
   return { verdict, confidence, passage, needsReview: confidence < autoAccept };
@@ -42,8 +42,8 @@ export function judgeAll(result: CheckResult, autoAccept: number) {
 }
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
-  supported: "Has a receipt",
+  supported: "Backed",
   contradicted: "Contradicted",
-  unsupported: "No receipt",
+  unsupported: "No source",
   not_claim: "Not a claim",
 };
