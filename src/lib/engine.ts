@@ -38,12 +38,12 @@ export function engineConfig() {
   const label = mock
     ? "Offline mock (not Jev)"
     : host.includes("codiv")
-      ? "OpenJev · codiv.ai"
+      ? "OpenJev on codiv.ai"
       : host.includes("vercel")
-        ? "Jev · Vercel AI Gateway"
+        ? "Jev on Vercel AI Gateway"
         : host.includes("typesafe")
-          ? "Jev · TypeSafe"
-          : `System One · ${host}`;
+          ? "Jev by TypeSafe"
+          : `System One at ${host}`;
   return { mock, baseUrl, model, label, configured: mock || !!process.env.TYPESAFE_API_KEY };
 }
 

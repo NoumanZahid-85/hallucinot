@@ -1,47 +1,42 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Receipts: a hallucination heatmap for AI answers";
+export const alt = "Alibi: find the sentences your AI made up";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const GRID = [
-  [0.95, 0.1, 0.05, 0.1, 0.05, 0.1],
-  [-0.97, 0.1, 0.05, 0.05, 0.1, 0.05],
-  [0.05, 0.1, 0.92, 0.05, 0.05, 0.1],
-  [0.1, 0.05, 0.05, 0.9, 0.6, 0.05],
-  [0.05, 0.05, 0.1, 0.05, 0.05, 0.1],
-  [0.05, -0.9, 0.05, 0.1, 0.05, 0.98],
+const LINES = [
+  { text: "Your notes stay safe on the Free plan.", hl: "#c5f2a8", line: "none", note: "Backed by a source", color: "#1e7b3c" },
+  { text: "Refunds are open for 60 days.", hl: "#ffc9dd", line: "#c8283f", note: "Source says 30 days", color: "#c8283f" },
+  { text: "We'll add a free month of Pro.", hl: "#ffe98a", line: "#8a6100", note: "No source mentions this", color: "#8a6100" },
 ];
 
 export default function OpengraphImage() {
   return new ImageResponse(
     (
-      <div style={{ display: "flex", width: "100%", height: "100%", background: "#f5f3ee", padding: 72, gap: 64, alignItems: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <div style={{ fontSize: 30, color: "#6d6a62", letterSpacing: 6 }}>RECEIPTS</div>
-          <div style={{ fontSize: 66, fontWeight: 700, color: "#1b1a17", lineHeight: 1.1, marginTop: 20 }}>
-            Every sentence an AI writes should come with a receipt.
-          </div>
-          <div style={{ fontSize: 28, color: "#6d6a62", marginTop: 28 }}>
-            Sentence × source fact-checking with typed decisions
-          </div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {GRID.map((row, r) => (
-            <div key={r} style={{ display: "flex", gap: 10 }}>
-              {row.map((v, c) => (
-                <div
-                  key={c}
-                  style={{
-                    width: 46,
-                    height: 46,
-                    borderRadius: 6,
-                    background: v < 0 ? `rgba(210,49,43,${-v})` : `rgba(22,128,60,${Math.max(0.08, v)})`,
-                  }}
-                />
-              ))}
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: "#f2f4f7", padding: "64px 72px" }}>
+        <div style={{ display: "flex", fontSize: 40, fontWeight: 700, color: "#172036" }}>Alibi</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 26, marginTop: 56 }}>
+          {LINES.map((l) => (
+            <div key={l.text} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: 50,
+                  color: "#172036",
+                  background: l.hl,
+                  padding: "2px 10px",
+                  borderRadius: 8,
+                  borderBottom: l.line === "none" ? "4px solid transparent" : `4px dashed ${l.line}`,
+                }}
+              >
+                {l.text}
+              </div>
+              <div style={{ display: "flex", fontSize: 24, color: l.color }}>{l.note}</div>
             </div>
           ))}
+        </div>
+        <div style={{ display: "flex", marginTop: "auto", fontSize: 28, color: "#545f75" }}>
+          Check every sentence of an AI answer against its sources.
         </div>
       </div>
     ),
