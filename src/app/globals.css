@@ -1,104 +1,145 @@
 @import "tailwindcss";
 
+/* Bond paper, navy ink, an editor's blue pencil and three highlighters. */
 :root {
-  --bg: #f5f3ee;
-  --surface: #ffffff;
-  --surface-2: #eeebe3;
-  --ink: #1b1a17;
-  --muted: #6d6a62;
-  --line: #e0dbcf;
-  --accent: #3b4fd8;
+  --paper: #f2f4f7;
+  --sheet: #ffffff;
+  --ink: #172036;
+  --ink-2: #545f75;
+  --rule: #d9dee7;
+  --pencil: #2a4bd7;
+  --pencil-soft: rgba(42, 75, 215, 0.1);
 
-  --ok: #16803c;
-  --ok-soft: #dcf3e2;
-  --bad: #d2312b;
-  --bad-soft: #fbe1df;
-  --warn: #c26a06;
-  --warn-soft: #fcefd6;
-  --idle: #8b877d;
-  --idle-soft: #eceae4;
+  --backed: #1e7b3c;
+  --backed-hl: #c5f2a8;
+  --refuted: #c8283f;
+  --refuted-hl: #ffc9dd;
+  --unsourced: #8a6100;
+  --unsourced-hl: #ffe98a;
+  --filler: #8a93a6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e1014;
-    --surface: #161920;
-    --surface-2: #1e222b;
-    --ink: #ecebe6;
-    --muted: #9b998f;
-    --line: #2a2f3a;
-    --accent: #8d9bff;
+    --paper: #0e1424;
+    --sheet: #161e33;
+    --ink: #e8ecf4;
+    --ink-2: #a3adc2;
+    --rule: #283353;
+    --pencil: #8fa6ff;
+    --pencil-soft: rgba(143, 166, 255, 0.14);
 
-    --ok: #4bd17a;
-    --ok-soft: rgba(75, 209, 122, 0.14);
-    --bad: #ff6b63;
-    --bad-soft: rgba(255, 107, 99, 0.15);
-    --warn: #f5b041;
-    --warn-soft: rgba(245, 176, 65, 0.14);
-    --idle: #7d7b73;
-    --idle-soft: rgba(125, 123, 115, 0.14);
+    --backed: #74e08a;
+    --backed-hl: rgba(116, 224, 138, 0.26);
+    --refuted: #ff7a9c;
+    --refuted-hl: rgba(255, 105, 160, 0.28);
+    --unsourced: #ffd45c;
+    --unsourced-hl: rgba(255, 212, 92, 0.26);
+    --filler: #7d879d;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0e1014;
-  --surface: #161920;
-  --surface-2: #1e222b;
-  --ink: #ecebe6;
-  --muted: #9b998f;
-  --line: #2a2f3a;
-  --accent: #8d9bff;
+  --paper: #0e1424;
+  --sheet: #161e33;
+  --ink: #e8ecf4;
+  --ink-2: #a3adc2;
+  --rule: #283353;
+  --pencil: #8fa6ff;
+  --pencil-soft: rgba(143, 166, 255, 0.14);
 
-  --ok: #4bd17a;
-  --ok-soft: rgba(75, 209, 122, 0.14);
-  --bad: #ff6b63;
-  --bad-soft: rgba(255, 107, 99, 0.15);
-  --warn: #f5b041;
-  --warn-soft: rgba(245, 176, 65, 0.14);
-  --idle: #7d7b73;
-  --idle-soft: rgba(125, 123, 115, 0.14);
+  --backed: #74e08a;
+  --backed-hl: rgba(116, 224, 138, 0.26);
+  --refuted: #ff7a9c;
+  --refuted-hl: rgba(255, 105, 160, 0.28);
+  --unsourced: #ffd45c;
+  --unsourced-hl: rgba(255, 212, 92, 0.26);
+  --filler: #7d879d;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
+  --color-paper: var(--paper);
+  --color-sheet: var(--sheet);
   --color-ink: var(--ink);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-ok: var(--ok);
-  --color-ok-soft: var(--ok-soft);
-  --color-bad: var(--bad);
-  --color-bad-soft: var(--bad-soft);
-  --color-warn: var(--warn);
-  --color-warn-soft: var(--warn-soft);
-  --color-idle: var(--idle);
-  --color-idle-soft: var(--idle-soft);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-pencil: var(--pencil);
+  --color-pencil-soft: var(--pencil-soft);
+  --color-backed: var(--backed);
+  --color-backed-hl: var(--backed-hl);
+  --color-refuted: var(--refuted);
+  --color-refuted-hl: var(--refuted-hl);
+  --color-unsourced: var(--unsourced);
+  --color-unsourced-hl: var(--unsourced-hl);
+  --color-filler: var(--filler);
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-doc);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--bg);
+  background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-ui), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Perforated receipt edge */
-.receipt-edge {
-  background-image: radial-gradient(circle at 6px -2px, var(--bg) 5px, transparent 5.5px);
-  background-size: 12px 8px;
-  background-repeat: repeat-x;
-  height: 8px;
+:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
+
+::selection {
+  background: var(--pencil-soft);
+}
+
+/* ---- Highlighter marks: each verdict has its own shape, not just a colour ---- */
+.mark {
+  --hl: transparent;
+  background-image: linear-gradient(transparent 10%, var(--hl) 10%, var(--hl) 90%, transparent 90%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  border-radius: 0.2em 0.45em 0.25em 0.5em;
+  padding: 0.05em 0.1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1.5px;
+}
+.mark-backed { --hl: var(--backed-hl); }
+.mark-refuted {
+  --hl: var(--refuted-hl);
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--refuted);
+}
+.mark-unsourced {
+  --hl: var(--unsourced-hl);
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--unsourced);
+}
+.mark-filler { color: var(--filler); }
+
+/* The one orchestrated moment: hero highlights sweep in on load. */
+@keyframes sweep {
+  from { background-size: 0% 100%; text-decoration-color: transparent; }
+}
+.sweep { animation: sweep 700ms cubic-bezier(0.6, 0, 0.2, 1) both; }
+
+@keyframes note-in {
+  from { opacity: 0; transform: translateX(-6px); }
+}
+.note-in { animation: note-in 400ms ease-out both; }
 
 @keyframes cell-in {
   from { opacity: 0; transform: scale(0.4); }
-  to { opacity: 1; transform: scale(1); }
 }
-.cell-in { animation: cell-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.cell-in { animation: cell-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
 @keyframes wave {
   0%, 100% { opacity: 0.25; }
@@ -112,6 +153,12 @@ body {
 }
 .connector { stroke-dasharray: 1; animation: draw 420ms ease-out both; }
 
+@keyframes toast {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.toast { animation: toast 200ms ease-out both; }
+
 @media (prefers-reduced-motion: reduce) {
-  .cell-in, .cell-wave, .connector { animation: none; }
+  html { scroll-behavior: auto; }
+  .sweep, .note-in, .cell-in, .cell-wave, .connector, .toast { animation: none; }
 }

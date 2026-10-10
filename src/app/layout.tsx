@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Literata, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Documents (answers and sources) are set in Literata; everything Alibi says is in Schibsted Grotesk.
+const ui = Schibsted_Grotesk({
+  variable: "--font-ui",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const doc = Literata({
+  variable: "--font-doc",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Receipts · Hallucination heatmap for AI answers",
+  title: "Alibi: find the sentences your AI made up",
   description:
-    "Paste an AI answer and its sources. Receipts checks every sentence against every source passage in parallel and shows which claims are backed, contradicted, or made up.",
+    "Paste an AI answer and its sources. Alibi checks every sentence against every passage and marks what's backed, what's contradicted, and what has no source at all.",
 };
 
 export default function RootLayout({
@@ -25,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${ui.variable} ${doc.variable} antialiased`}>{children}</body>
     </html>
   );
 }
