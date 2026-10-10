@@ -1,12 +1,13 @@
 {
-  "name": "scaffold",
+  "name": "receipts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node scripts/seed-demos.mjs"
   },
   "dependencies": {
     "react": "19.1.0",
