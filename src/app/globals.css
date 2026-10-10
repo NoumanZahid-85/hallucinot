@@ -1,70 +1,80 @@
 @import "tailwindcss";
 
-/* Bond paper, navy ink, an editor's blue pencil and three highlighters. */
+/* Ultraviolet brand on cool lavender paper; three highlighters for verdicts. */
 :root {
-  --paper: #f2f4f7;
-  --sheet: #ffffff;
-  --ink: #172036;
-  --ink-2: #545f75;
-  --rule: #d9dee7;
-  --pencil: #2a4bd7;
-  --pencil-soft: rgba(42, 75, 215, 0.1);
+  color-scheme: light dark;
+  --bg: #f7f6fb;
+  --card: #ffffff;
+  --ink: #1d1a2f;
+  --muted: #6b6880;
+  --line: #e6e3ef;
+  --brand: #6c3bff;
+  --brand-ink: #ffffff;
+  --brand-soft: #eee8ff;
 
-  --backed: #1e7b3c;
-  --backed-hl: #c5f2a8;
-  --refuted: #c8283f;
-  --refuted-hl: #ffc9dd;
-  --unsourced: #8a6100;
-  --unsourced-hl: #ffe98a;
-  --filler: #8a93a6;
+  --backed: #12965a;
+  --backed-hl: #cdf5df;
+  --refuted: #e5484d;
+  --refuted-hl: #ffd9db;
+  --unsourced: #a86a12;
+  --unsourced-hl: #ffefb3;
+  --filler: #9b98ad;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --paper: #0e1424;
-    --sheet: #161e33;
-    --ink: #e8ecf4;
-    --ink-2: #a3adc2;
-    --rule: #283353;
-    --pencil: #8fa6ff;
-    --pencil-soft: rgba(143, 166, 255, 0.14);
+    --bg: #121019;
+    --card: #1b1825;
+    --ink: #f1eff8;
+    --muted: #a19db5;
+    --line: #2c2839;
+    --brand: #9b7bff;
+    --brand-ink: #120d24;
+    --brand-soft: rgba(155, 123, 255, 0.16);
 
-    --backed: #74e08a;
-    --backed-hl: rgba(116, 224, 138, 0.26);
-    --refuted: #ff7a9c;
-    --refuted-hl: rgba(255, 105, 160, 0.28);
-    --unsourced: #ffd45c;
-    --unsourced-hl: rgba(255, 212, 92, 0.26);
-    --filler: #7d879d;
+    --backed: #3dd68c;
+    --backed-hl: rgba(61, 214, 140, 0.2);
+    --refuted: #ff6b70;
+    --refuted-hl: rgba(255, 107, 112, 0.22);
+    --unsourced: #f5c451;
+    --unsourced-hl: rgba(245, 196, 81, 0.22);
+    --filler: #75718a;
   }
 }
 
-:root[data-theme="dark"] {
-  --paper: #0e1424;
-  --sheet: #161e33;
-  --ink: #e8ecf4;
-  --ink-2: #a3adc2;
-  --rule: #283353;
-  --pencil: #8fa6ff;
-  --pencil-soft: rgba(143, 166, 255, 0.14);
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 
-  --backed: #74e08a;
-  --backed-hl: rgba(116, 224, 138, 0.26);
-  --refuted: #ff7a9c;
-  --refuted-hl: rgba(255, 105, 160, 0.28);
-  --unsourced: #ffd45c;
-  --unsourced-hl: rgba(255, 212, 92, 0.26);
-  --filler: #7d879d;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121019;
+  --card: #1b1825;
+  --ink: #f1eff8;
+  --muted: #a19db5;
+  --line: #2c2839;
+  --brand: #9b7bff;
+  --brand-ink: #120d24;
+  --brand-soft: rgba(155, 123, 255, 0.16);
+
+  --backed: #3dd68c;
+  --backed-hl: rgba(61, 214, 140, 0.2);
+  --refuted: #ff6b70;
+  --refuted-hl: rgba(255, 107, 112, 0.22);
+  --unsourced: #f5c451;
+  --unsourced-hl: rgba(245, 196, 81, 0.22);
+  --filler: #75718a;
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-sheet: var(--sheet);
+  --color-bg: var(--bg);
+  --color-card: var(--card);
   --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-rule: var(--rule);
-  --color-pencil: var(--pencil);
-  --color-pencil-soft: var(--pencil-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
   --color-backed: var(--backed);
   --color-backed-hl: var(--backed-hl);
   --color-refuted: var(--refuted);
@@ -72,43 +82,53 @@
   --color-unsourced: var(--unsourced);
   --color-unsourced-hl: var(--unsourced-hl);
   --color-filler: var(--filler);
-  --font-sans: var(--font-ui);
-  --font-serif: var(--font-doc);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display-face);
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* keeps focused items clear of the sticky toolbar */
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (pointer: fine) {
+  html { overscroll-behavior: none; }
 }
 
 body {
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-ui), system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+button, a, input, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
 :focus-visible {
-  outline: 2px solid var(--pencil);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 
 ::selection {
-  background: var(--pencil-soft);
+  background: var(--brand-soft);
 }
 
-/* ---- Highlighter marks: each verdict has its own shape, not just a colour ---- */
+/* ---- Highlighter marks: each verdict has its own shape, not only a colour ---- */
 .mark {
   --hl: transparent;
-  background-image: linear-gradient(transparent 10%, var(--hl) 10%, var(--hl) 90%, transparent 90%);
+  background-image: linear-gradient(transparent 8%, var(--hl) 8%, var(--hl) 92%, transparent 92%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  border-radius: 0.2em 0.45em 0.25em 0.5em;
-  padding: 0.05em 0.1em;
+  border-radius: 0.25em 0.45em 0.3em 0.5em;
+  padding: 0.05em 0.12em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   text-underline-offset: 0.3em;
-  text-decoration-thickness: 1.5px;
+  text-decoration-thickness: 2px;
 }
 .mark-backed { --hl: var(--backed-hl); }
 .mark-refuted {
@@ -125,21 +145,38 @@ body {
 }
 .mark-filler { color: var(--filler); }
 
-/* The one orchestrated moment: hero highlights sweep in on load. */
+/* Guess mode: a sentence the player has flagged. */
+.flagged {
+  background-color: var(--brand-soft);
+  text-decoration: underline 2px dotted var(--brand);
+  text-underline-offset: 0.3em;
+  border-radius: 0.3em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* ---- Motion: transform/opacity/background-size only, all disabled for reduced motion ---- */
 @keyframes sweep {
   from { background-size: 0% 100%; text-decoration-color: transparent; }
 }
-.sweep { animation: sweep 700ms cubic-bezier(0.6, 0, 0.2, 1) both; }
+.sweep { animation: sweep 600ms cubic-bezier(0.6, 0, 0.2, 1) both; }
 
-@keyframes note-in {
-  from { opacity: 0; transform: translateX(-6px); }
+@keyframes pop {
+  0% { opacity: 0; transform: scale(0.92) translateY(6px); }
+  60% { opacity: 1; transform: scale(1.02); }
+  100% { transform: scale(1); }
 }
-.note-in { animation: note-in 400ms ease-out both; }
+.pop { animation: pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: center top; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.rise { animation: rise 320ms ease-out both; }
 
 @keyframes cell-in {
   from { opacity: 0; transform: scale(0.4); }
 }
-.cell-in { animation: cell-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.cell-in { animation: cell-in 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 
 @keyframes wave {
   0%, 100% { opacity: 0.25; }
@@ -147,18 +184,19 @@ body {
 }
 .cell-wave { animation: wave 1.1s ease-in-out infinite; }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin { animation: spin 0.8s linear infinite; transform-origin: center; }
+
 @keyframes draw {
   from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
 }
 .connector { stroke-dasharray: 1; animation: draw 420ms ease-out both; }
 
-@keyframes toast {
-  from { opacity: 0; transform: translateY(8px); }
-}
-.toast { animation: toast 200ms ease-out both; }
-
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .sweep, .note-in, .cell-in, .cell-wave, .connector, .toast { animation: none; }
+  .sweep, .pop, .rise, .cell-in, .cell-wave, .connector { animation: none; }
+  .spin { animation-duration: 2.4s; }
 }

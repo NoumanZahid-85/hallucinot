@@ -1,23 +1,34 @@
-import type { Metadata } from "next";
-import { Literata, Schibsted_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
 
-// Documents (answers and sources) are set in Literata; everything Alibi says is in Schibsted Grotesk.
-const ui = Schibsted_Grotesk({
-  variable: "--font-ui",
+const display = Bricolage_Grotesque({
+  variable: "--font-display-face",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const doc = Literata({
-  variable: "--font-doc",
+const body = Figtree({
+  variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Alibi: find the sentences your AI made up",
+  title: "Hallucinot: Catch Your AI Making Things Up",
   description:
-    "Paste an AI answer and its sources. Alibi checks every sentence against every passage and marks what's backed, what's contradicted, and what has no source at all.",
+    "Paste an AI answer and its sources. Hallucinot checks every sentence against every passage and shows what's backed, contradicted, or made up.",
 };
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f6fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#121019" },
+  ],
+};
+
+// Applies a saved theme choice before first paint, so there is no flash.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -25,8 +36,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ui.variable} ${doc.variable} antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={`${display.variable} ${body.variable} antialiased`}>
+        <a
+          href="#playground"
+          className="sr-only rounded-lg bg-brand px-4 py-2 font-bold text-brand-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
+        >
+          Skip to Playground
+        </a>
+        {children}
+      </body>
     </html>
   );
 }
