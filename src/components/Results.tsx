@@ -390,7 +390,7 @@ function Board({ result, judgements, labels, selected, onSelect, sentenceEls, ho
                     <span className="text-ink-2">{p.doc}</span>
                   </span>
                   <span
-                    className={`shrink-0 tabular-nums ${rel === "backs" ? "text-backed" : rel === "contradicts" ? "text-refuted" : "text-ink-2"}`}
+                    className={`shrink-0 ${rel === "backs" ? "text-backed" : rel === "contradicts" ? "text-refuted" : "text-ink-2"}`}
                   >
                     {rel === "backs" ? `Backs it, ${pct(sup)}` : rel === "contradicts" ? `Contradicts it, ${pct(con)}` : `Silent, ${pct(none)}`}
                   </span>
