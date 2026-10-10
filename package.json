@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "node scripts/seed-demos.mjs"
+    "seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-demos.mjs"
   },
   "dependencies": {
     "react": "19.1.0",
