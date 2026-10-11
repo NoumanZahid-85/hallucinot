@@ -43,8 +43,8 @@ export function judgeAll(result: CheckResult, autoAccept: number) {
 }
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
-  supported: "Backed",
+  supported: "Supported",
   contradicted: "Contradicted",
-  unsupported: "No Source",
-  not_claim: "Not a Claim",
+  unsupported: "No source",
+  not_claim: "Not a claim",
 };
