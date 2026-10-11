@@ -77,7 +77,14 @@ npm run dev
 
 Set `TYPESAFE_API_KEY` too. No key yet? `JEV_ENGINE=mock npm run dev` runs an offline mock for UI work.
 
-**Deploy:** import the repo on [Vercel](https://vercel.com/new) and add the two variables. The key stays on the server, and rate limits, input caps and retries are built in.
+### Environment variables
+
+- `TYPESAFE_BASE_URL` – endpoint URL (`https://api.codiv.ai` or `https://api.typesafe.ai`)
+- `TYPESAFE_API_KEY` – your engine API key
+- `RATE_LIMIT_PER_10_MIN` – (optional, default `8`) max live checks allowed per visitor IP per 10 minutes to protect your quota
+- `TYPESAFE_MODEL` – (optional, default `jev-latest`) model version
+
+**Deploy:** import the repo on [Vercel](https://vercel.com/new) and add the environment variables. The key stays on the server, and rate limits, input caps and retries are built in.
 
 ## Honest limits
 

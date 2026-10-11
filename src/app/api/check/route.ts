@@ -7,17 +7,25 @@ export const maxDuration = 60;
 // Best-effort per-IP limit. Serverless instances don't share memory, so this
 // slows down abuse rather than enforcing a hard global quota.
 const WINDOW_MS = 10 * 60 * 1000;
-const MAX_PER_WINDOW = Number(process.env.RATE_LIMIT_PER_10_MIN || 8);
+const MAX_PER_WINDOW = Math.max(1, parseInt(process.env.RATE_LIMIT_PER_10_MIN || "8", 10) || 8);
 const hits = new Map<string, number[]>();
 
-function limited(ip: string) {
+function checkRateLimit(ip: string): { limited: boolean; remaining: number; resetSec: number } {
   const now = Date.now();
   const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  if (recent.length >= MAX_PER_WINDOW) return true;
+  if (recent.length >= MAX_PER_WINDOW) {
+    const oldest = recent[0] ?? now;
+    const resetSec = Math.max(1, Math.ceil((oldest + WINDOW_MS - now) / 1000));
+    return { limited: true, remaining: 0, resetSec };
+  }
   recent.push(now);
   hits.set(ip, recent);
   if (hits.size > 5000) hits.clear();
-  return false;
+  return {
+    limited: false,
+    remaining: Math.max(0, MAX_PER_WINDOW - recent.length),
+    resetSec: Math.ceil(WINDOW_MS / 1000),
+  };
 }
 
 const fail = (error: string, status: number) => Response.json({ error }, { status });
@@ -28,8 +36,22 @@ export async function POST(req: Request) {
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (limited(ip)) {
-    return fail("You've run a lot of checks in a short time. Take a 10-minute break, or explore the saved demos.", 429);
+  const rate = checkRateLimit(ip);
+  if (rate.limited) {
+    return new Response(
+      JSON.stringify({
+        error: `You've run a lot of checks in a short time (limit is ${MAX_PER_WINDOW} per 10 minutes). Take a short break, or explore the saved demos.`,
+      }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(rate.resetSec),
+          "X-RateLimit-Limit": String(MAX_PER_WINDOW),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
   }
 
   let body: { question?: unknown; answer?: unknown; sources?: unknown };
@@ -51,7 +73,12 @@ export async function POST(req: Request) {
 
   try {
     const result = await runCheck(question || "(no question given)", answer, sources);
-    return Response.json(result);
+    return Response.json(result, {
+      headers: {
+        "X-RateLimit-Limit": String(MAX_PER_WINDOW),
+        "X-RateLimit-Remaining": String(rate.remaining),
+      },
+    });
   } catch (err) {
     if (err instanceof EngineError) return fail(err.message, err.status);
     console.error(err);
