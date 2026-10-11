@@ -1,45 +1,46 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Hallucinot: catch your AI making things up";
+export const alt = "Hallucinot: find the sentences your AI made up";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const LINES = [
-  { text: "Your notes stay safe on the Free plan.", hl: "#cdf5df", line: "transparent", tag: "Backed", color: "#12965a" },
-  { text: "Refunds are open for 60 days.", hl: "#ffd9db", line: "#e5484d", tag: "Contradicted", color: "#e5484d" },
-  { text: "We'll add a free month of Pro.", hl: "#ffefb3", line: "#a86a12", tag: "No Source", color: "#a86a12" },
-];
+const BLUE = "#2a78d6", RED = "#d03b3b", AMBER = "#eda100", GREY = "#e9ecf0", INK = "#0f1217";
+// A small evidence matrix: B = supports, R = contradicts, . = says nothing.
+const MATRIX = ["R......", "..B....", "...BB..", "...R...", ".....B.", "......R", "B......"];
 
 export default function OpengraphImage() {
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: "#f7f6fb", padding: "60px 72px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ display: "flex", width: 52, height: 52, borderRadius: 14, background: "#6c3bff" }} />
-          <div style={{ display: "flex", fontSize: 44, fontWeight: 800, color: "#1d1a2f" }}>Hallucinot</div>
+      <div style={{ display: "flex", width: "100%", height: "100%", background: "#f5f6f8", padding: 64, gap: 56 }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ display: "flex", width: 44, height: 44, borderRadius: 11, background: INK }} />
+            <div style={{ display: "flex", fontSize: 34, fontWeight: 700, color: INK }}>Hallucinot</div>
+          </div>
+          <div style={{ display: "flex", fontSize: 72, fontWeight: 700, color: INK, lineHeight: 1.05, marginTop: 56, letterSpacing: -2 }}>
+            Find the sentences your AI made up.
+          </div>
+          <div style={{ display: "flex", fontSize: 26, color: "#4a515e", marginTop: 28 }}>Every sentence checked against every source passage.</div>
         </div>
-        <div style={{ display: "flex", fontSize: 64, fontWeight: 800, color: "#1d1a2f", marginTop: 36, letterSpacing: -2 }}>
-          Catch your AI making things up.
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 40 }}>
-          {LINES.map((l) => (
-            <div key={l.text} style={{ display: "flex", alignItems: "center", gap: 20 }}>
-              <div
-                style={{
-                  display: "flex",
-                  fontSize: 34,
-                  color: "#1d1a2f",
-                  background: l.hl,
-                  padding: "2px 12px",
-                  borderRadius: 10,
-                  borderBottom: `3px dashed ${l.line}`,
-                }}
-              >
-                {l.text}
-              </div>
-              <div style={{ display: "flex", fontSize: 22, fontWeight: 700, color: l.color }}>{l.tag}</div>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 28, width: 360 }}>
+          <div style={{ display: "flex", flexDirection: "column", background: "#fff", borderRadius: 20, padding: 28, gap: 14 }}>
+            <div style={{ display: "flex", fontSize: 22, color: "#4a515e" }}>Groundedness</div>
+            <div style={{ display: "flex", fontSize: 72, fontWeight: 700, color: INK }}>43%</div>
+            <div style={{ display: "flex", height: 14, gap: 3 }}>
+              <div style={{ display: "flex", flex: 3, background: BLUE, borderRadius: 4 }} />
+              <div style={{ display: "flex", flex: 3, background: RED, borderRadius: 4 }} />
+              <div style={{ display: "flex", flex: 1, background: AMBER, borderRadius: 4 }} />
             </div>
-          ))}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5, background: "#fff", borderRadius: 20, padding: 28 }}>
+            {MATRIX.map((row, r) => (
+              <div key={r} style={{ display: "flex", gap: 5 }}>
+                {row.split("").map((c, i) => (
+                  <div key={i} style={{ display: "flex", width: 38, height: 22, borderRadius: 4, background: c === "B" ? BLUE : c === "R" ? RED : GREY }} />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     ),
