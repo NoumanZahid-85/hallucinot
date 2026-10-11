@@ -2,62 +2,64 @@
 
 # Hallucinot
 
-### Catch your AI making things up.
+### Find the sentences your AI made up.
 
-Your support bot just promised a customer a **60-day** refund.<br/>
-Your policy says **30**. Hallucinot noticed.
-
-<br/>
-
-<img src="docs/demo.gif" alt="Hallucinot demo: flag suspicious sentences, check them, and see each claim linked to the source that backs or contradicts it" width="100%" />
+Your support bot just promised a customer a **60-day** refund. Your policy says **30**.<br/>
+Hallucinot checks every sentence of an AI answer against every source passage and shows you exactly where it went wrong.
 
 <br/>
 
-![Next.js 15](https://img.shields.io/badge/Next.js-15-1d1a2f?logo=nextdotjs)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-1d1a2f?logo=typescript&logoColor=white)
-![Engine](https://img.shields.io/badge/engine-Jev%20%2F%20OpenJev-6c3bff)
-![Deploy](https://img.shields.io/badge/deploy-Vercel-1d1a2f?logo=vercel)
+<img src="docs/demo.gif" alt="Hallucinot: an AI answer marked sentence by sentence, with evidence lines, a confidence chart with a draggable review line, and an evidence heatmap" width="100%" />
+
+<br/>
+
+![Next.js 15](https://img.shields.io/badge/Next.js-15-0f1217?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-0f1217?logo=typescript&logoColor=white)
+![Engine](https://img.shields.io/badge/engine-Jev%20%2F%20OpenJev-2a78d6)
+![Deploy](https://img.shields.io/badge/deploy-Vercel-0f1217?logo=vercel)
 
 </div>
 
-## Play it
+## Why
 
-1. **Pick** an answer: a support bot, a space explainer, an HR assistant, or your own text.
-2. **Flag** the sentences you think are made up.
-3. **Check.** Highlights sweep in, and you see how you did against Hallucinot.
+RAG chatbots answer from your documents, and they still make things up. Checking by hand doesn't scale. Asking another LLM to grade the answer gives you a paragraph, not proof: it won't tell you which sentence is wrong, which passage proves it, or how sure it is.
 
-Then dig in. Click any sentence and a line connects it to the exact passage that backs it 🟩 or contradicts it 🟥. Sentences with no source at all are marked 🟨.
+## How
 
-## How it works
+Hallucinot asks a decision model hundreds of tiny multiple-choice questions, one for every sentence × passage pair:
 
-Instead of asking an LLM to write a review of an answer, Hallucinot asks hundreds of tiny multiple-choice questions, one for every sentence × passage pair:
+> Does this passage **support**, **contradict**, or **say nothing about** “Refunds are open for 60 days”?
 
-> Does this passage **back**, **contradict**, or **say nothing about** “Refunds are open for 60 days”?
+A [Jev](https://typesafe.ai)-style model answers each one with a probability for every option, not prose. Plain code turns those probabilities into verdicts:
 
-A [Jev](https://typesafe.ai)-style decision model answers each one with probabilities, not prose. Plain code does the rest: each sentence keeps its strongest evidence, and anything the model is unsure about goes to a human.
+| | Verdict | Meaning |
+|---|---|---|
+| 🟦 | **Supported** | A passage states it or directly implies it |
+| 🟥 | **Contradicted** | A passage says the opposite: a hallucination |
+| 🟨 | **No source** | Nothing backs it up or rules it out |
+
+## What you get
+
+- **Answer and evidence board.** Every sentence is marked, and clicking one draws lines to the passages that support or contradict it.
+- **Confidence chart.** One bar per claim, and the **review line is draggable right on the chart**. Anything below it goes to a person, and everything re-sorts instantly with no new API calls.
+- **Source coverage.** See which documents backed claims, which contradicted them, and which were never used.
+- **Evidence matrix.** A heatmap of every check, on a diverging red ← grey → blue scale.
+- **Metrics:** groundedness, contradictions, unsourced claims, review queue, cost and latency.
+- **Copy Report** as Markdown, **Export JSON**, a full results table, keyboard navigation (`←` `→` `N`), and light and dark themes.
+
+Colors are checked for color blindness (the chart palette passes an automated CVD validator), and every verdict also has its own icon and underline style, so meaning never depends on color alone.
 
 ## Does it work?
 
-These are real runs on the built-in examples, scored against hand labels:
+These are real engine runs on the three built-in examples, scored against hand labels:
 
 | Example | Checks | Time | Cost | Matches labels |
 |---|---|---|---|---|
-| Support Bot | 72 | 2.5 s | $0.0006 | 9/9 |
-| Space Facts | 81 | 2.6 s | $0.0006 | 8/9 |
-| HR Policy | 80 | 3.3 s | $0.0006 | 9/10 |
+| Support bot | 72 | 2.5 s | $0.0006 | 9/9 |
+| Space facts | 81 | 2.6 s | $0.0006 | 8/9 |
+| HR policy | 80 | 3.3 s | $0.0006 | 9/10 |
 
-**26 of 28 sentences are right, and the two misses were flagged for human review instead of being stated confidently.**
-
-## Features
-
-| | |
-|---|---|
-| 🎯 **Spot-the-fake game** | Flag sentences, then score yourself against the checker |
-| 🔗 **Evidence lines** | Connect every claim to the passage that proves or disproves it |
-| 🎚️ **Trust slider** | Set how sure the model must be, and results re-sort instantly with no new API calls |
-| ⌨️ **Keyboard first** | `←` `→` step through sentences, `N` jumps to the next issue, `Ctrl + Enter` checks |
-| 📋 **Copy report** | Get a Markdown summary for tickets and pull requests |
-| 🌗 **Light and dark** | Theme toggle, accessible marks that don't rely on color alone, and reduced-motion support |
+**26 of 28 sentences are right, and both misses landed below the review line instead of being stated confidently.**
 
 ## Run it
 
@@ -75,12 +77,12 @@ npm run dev
 
 Set `TYPESAFE_API_KEY` too. No key yet? `JEV_ENGINE=mock npm run dev` runs an offline mock for UI work.
 
-**Deploy:** import the repo on [Vercel](https://vercel.com/new), add the two variables, and you're done. The key stays on the server, and rate limits and retries are built in.
+**Deploy:** import the repo on [Vercel](https://vercel.com/new) and add the two variables. The key stays on the server, and rate limits, input caps and retries are built in.
 
 ## Honest limits
 
-- The probabilities rank options well, but they aren't proven to be calibrated. That's why you set the trust level yourself.
+- The probabilities rank options well, but they aren't proven to be calibrated. That's why you set the review line yourself.
 - Math and dates are weak spots, such as checking whether "five weeks" is within 30 days.
-- Each passage is judged on its own, so a claim that needs two passages combined can come back as "no source."
+- Each passage is judged on its own, so a claim that needs two passages combined can come back as "No source."
 
 <sub>Built on the System One API from [TypeSafe](https://typesafe.ai), served free by [OpenJev](https://github.com/razorback16/openjev). The sample companies are fictional, and the space facts are real (the AI's mistakes are deliberate).</sub>
